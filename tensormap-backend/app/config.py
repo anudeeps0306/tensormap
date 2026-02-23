@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     upload_folder: str = "./data"
     max_content_length: int = 200 * 1024 * 1024
     api_base: str = "/api/v1"
-    debug: bool = True
+    debug: bool = False
 
     model_config = {"env_file": ".env"}
 
