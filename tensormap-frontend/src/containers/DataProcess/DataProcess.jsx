@@ -14,7 +14,7 @@ import FeedbackDialog from "../../components/shared/FeedbackDialog";
 import Metrics from "../../components/Process/Metrics";
 import DisplayDataset from "../../components/Process/DisplayDataset";
 import SelectFileModal from "../../components/Process/SelectFileModal";
-import { getAllFiles, getCovMatrix as getCorrMatrix } from "../../services/FileServices";
+import { getAllFiles, getCovMatrix as getCorrMatrix, getFileData } from "../../services/FileServices";
 import PreprocessData from "../../components/Process/PreprocessData";
 
 function DataProcess() {
@@ -23,11 +23,12 @@ function DataProcess() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedFileType, setSelectedFileType] = useState(null);
   const [totalDetails, setTotalDetails] = useState(null);
-  const [targetAddedSuccessfully, setTargetAddedSuccessfully] = useState(false);
+  const [targetAddedSuccessfully] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [corrMatrix, setCorrMatrix] = useState(null);
   const [dataTypes, setDataTypes] = useState(null);
   const [metrics, setMetrics] = useState(null);
+  const [fileData, setFileData] = useState(null);
 
   const updateFileList = () => {
     getAllFiles(projectId).then((response) => {
@@ -66,6 +67,13 @@ function DataProcess() {
         setCorrMatrix(response.correlation_matrix);
         setDataTypes(response.data_types);
         setMetrics(response.metric);
+
+        try {
+          const fileDataResponse = await getFileData(fileId);
+          setFileData(JSON.parse(fileDataResponse));
+        } catch (e) {
+          console.error("Could not fetch fileData", e);
+        }
       }
       setSelectedFile(fileId);
       setSelectedFileType(fileType);
@@ -120,6 +128,7 @@ function DataProcess() {
               dataTypes={dataTypes}
               fileType={selectedFileType}
               metrics={metrics}
+              fileData={fileData}
             />
           ) : (
             <SelectFileModal />
